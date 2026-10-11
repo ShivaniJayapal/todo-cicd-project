@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My To-Do App</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; background: #f4f6f8; }
+        h1 { color: #263238; }
+        form { display: flex; gap: 8px; margin-bottom: 20px; }
+        input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 6px; }
+        button, .action { padding: 10px 12px; border: 0; border-radius: 6px; background: #1976d2; color: white; cursor: pointer; text-decoration: none; }
+        li { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: white; margin: 10px 0; padding: 12px; border-radius: 6px; }
+        .completed { text-decoration: line-through; color: gray; }
+        .delete { background: #d32f2f; }
+    </style>
+</head>
+<body>
+    <h1>Welcome to My To-Do App</h1>
+    <form action="/add" method="post">
+        <input name="task" placeholder="Enter a task..." required>
+        <button type="submit">Add</button>
+    </form>
+    <ul>
+        {% for task in tasks %}
+        <li>
+            <span class="{{ 'completed' if task.completed else '' }}">{{ task.text }}</span>
+            <span>
+                <a class="action" href="/complete/{{ loop.index0 }}">Complete</a>
+                <a class="action delete" href="/delete/{{ loop.index0 }}">Delete</a>
+            </span>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
