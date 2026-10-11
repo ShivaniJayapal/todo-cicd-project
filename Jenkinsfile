@@ -5,6 +5,10 @@ pipeline {
         DOCKER_IMAGE = 'shivanij2004/student-todo'
     }
 
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -40,6 +44,15 @@ pipeline {
                         docker logout
                     '''
                 }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh '''
+                    kubectl set image deployment/todo-app todo-app=$DOCKER_IMAGE:$BUILD_NUMBER
+                    kubectl rollout status deployment/todo-app --timeout=180s
+                '''
             }
         }
     }
