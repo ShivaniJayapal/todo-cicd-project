@@ -1,6 +1,10 @@
-
+```groovy
 pipeline {
     agent any
+
+    environment {
+        DOCKER_IMAGE = 'shivanij2004/student-todo'
+    }
 
     stages {
         stage('Checkout') {
@@ -18,8 +22,27 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t student-todo:latest .'
+                sh 'docker build -t $DOCKER_IMAGE:$BUILD_NUMBER -t $DOCKER_IMAGE:latest .'
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: '8c701f71-0654-4877-96ae-d4cf3828192a',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    sh '''
+                        set +x
+                        echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
+                        docker push "$DOCKER_IMAGE:$BUILD_NUMBER"
+                        docker push "$DOCKER_IMAGE:latest"
+                        docker logout
+                    '''
+                }
             }
         }
     }
 }
+```
